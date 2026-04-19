@@ -1,164 +1,128 @@
 # CreatorReach AI
 
-CreatorReach AI is a modern SaaS-style web app for **AI-assisted creator outreach CRM**.  
-It helps founders and small brands plan campaigns, manage creator relationships, generate personalized outreach drafts, and track pipeline movement safely.
-
-> Compliance-first by design: this app is **not** a bulk auto-DM tool and does not include social credential scraping or prohibited automation flows.
+AI-assisted creator outreach CRM for founders and small brands. Manage campaigns, add creators, generate personalized outreach drafts, and track your pipeline — all without bulk auto-sending or platform abuse.
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- shadcn/ui-inspired component structure (reusable local UI primitives)
-- Supabase (Auth + Postgres-ready schema)
-- Recharts (analytics)
-- dnd-kit (pipeline drag-and-drop)
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Database:** Supabase (PostgreSQL + Auth)
+- **AI:** Mock functions (structured for OpenAI integration)
+- **Charts:** Recharts
+- **Drag & Drop:** @hello-pangea/dnd
 
-## Features Implemented
+## Features
 
-- Email/password auth UI using Supabase client integration
-- Protected `/app/*` routes via `middleware.ts` + server layout checks
-- Responsive app shell with sidebar nav and topbar
-- Light/dark mode support (`next-themes`)
-- Dashboard with KPI cards, recent campaigns, recent activity, trend chart
-- Campaign list + create campaign modal
-- Campaign detail page with tabs:
-  - Creators
-  - Messages
-  - Pipeline
-  - Analytics
-  - Settings
-- Creators CRM:
-  - Search + platform/stage filters
-  - Rich table columns
-  - Manual creator add flow
-  - Detail side panel (summary, notes, AI hook, outreach, timeline)
-- Pipeline board with drag/drop stages:
-  - New, Reviewed, Drafted, Ready to Send, Sent, Replied, Interested, Negotiating, Won, Not Interested
-- AI Outreach Studio:
-  - Context form + channel/tone/CTA/offer controls
-  - Generated subject + 3-message sequence
-  - Rewrite actions (shorter/warmer/premium/less salesy/social proof)
-  - Editable outputs + copy-to-clipboard
-- AI architecture:
-  - Mock generation service
-  - Future OpenAI adapter placeholders
-  - API routes for outreach and creator-insights generation
-- Analytics page with funnel chart, reply rate, and conversion cards
-- Settings page with explicit safety/compliance guidance
-- Supabase-ready SQL schema + seed SQL
-- Mock seed data throughout app so UI feels alive immediately
+- **Dashboard** — KPI cards, performance chart, recent campaigns, activity feed
+- **Campaigns** — Create, manage, and view campaign details with tabs (Creators, Messages, Pipeline, Analytics, Settings)
+- **Creators CRM** — Searchable, filterable table with detail side panel (AI summary, fit score, hooks, timeline)
+- **Pipeline Board** — Kanban drag-and-drop across 10 stages (New → Won / Not Interested)
+- **AI Outreach Studio** — Generate personalized subject lines, initial messages, and follow-ups with one-click rewrite actions (shorter, warmer, premium, less salesy, social proof)
+- **Analytics** — Outreach funnel, weekly trends, conversion rates
+- **Settings** — Profile, appearance, notifications, safety & compliance info
+- **Auth** — Login/signup pages (Supabase Auth ready)
+- **Light/Dark mode** — Full theme support
 
-## Project Structure
+## Getting Started
 
-```text
-src/
-  app/
-    (auth)/login
-    (auth)/signup
-    (app)/app/...
-    api/ai/...
-  components/
-    analytics/
-    auth/
-    campaigns/
-    creators/
-    dashboard/
-    layout/
-    outreach/
-    ui/
-  lib/
-    ai/
-    supabase/
-    constants.ts
-    env.ts
-    mock-data.ts
-    presentation.ts
-    types.ts
-supabase/
-  schema.sql
-  seed.sql
-middleware.ts
-```
-
-## Setup
-
-1. Install dependencies:
+### 1. Clone and install
 
 ```bash
+git clone <repo-url>
+cd creatorreach-ai
 npm install
 ```
 
-2. Copy environment file:
+### 2. Environment variables
+
+Copy the example env file and fill in your values:
 
 ```bash
-cp .env.example .env.local
+cp .env.local.example .env.local
 ```
 
-3. Fill in Supabase values in `.env.local`:
+Required variables:
+- `NEXT_PUBLIC_SUPABASE_URL` — Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Your Supabase anonymous key
+- `OPENAI_API_KEY` — (Optional) For AI message generation
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-NEXT_PUBLIC_USE_MOCK_AI=true
+### 3. Database setup
+
+Run the schema in your Supabase SQL Editor:
+
+```bash
+# Copy contents of supabase/schema.sql into Supabase SQL Editor and run
 ```
 
-4. Run dev server:
+This creates all tables with Row Level Security policies:
+- `profiles` — User profiles (auto-created on signup)
+- `campaigns` — Outreach campaigns
+- `creators` — Creator CRM entries
+- `outreach_messages` — Generated/sent messages
+- `activities` — Activity log
+
+### 4. Run the development server
 
 ```bash
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Supabase Schema + Seed
+The app ships with **mock data** so everything works immediately without a Supabase connection.
 
-1. Run `supabase/schema.sql` in the Supabase SQL editor.
-2. Replace `USER_UUID` placeholders in `supabase/seed.sql`.
-3. Run `supabase/seed.sql`.
+## Project Structure
 
-The schema includes:
+```
+src/
+├── app/
+│   ├── (app)/              # Protected app routes
+│   │   ├── dashboard/
+│   │   ├── campaigns/
+│   │   ├── creators/
+│   │   ├── pipeline/
+│   │   ├── outreach/
+│   │   ├── analytics/
+│   │   └── settings/
+│   ├── api/ai/generate/    # AI generation API route
+│   └── auth/               # Login & signup pages
+├── components/
+│   ├── ui/                 # shadcn/ui components
+│   ├── layout/             # Sidebar, header
+│   ├── dashboard/          # KPI cards, chart, feed
+│   ├── campaigns/          # Campaign card, create dialog
+│   ├── creators/           # Creator panel, add dialog
+│   └── ...
+├── data/
+│   └── mock.ts             # Seed/mock data
+├── lib/
+│   ├── ai.ts               # AI generation functions (mock → OpenAI)
+│   ├── supabase/           # Supabase client setup
+│   └── utils.ts            # Utility functions
+└── types/
+    └── index.ts            # TypeScript types
+```
 
-- `users`
-- `campaigns`
-- `creators`
-- `outreach_messages`
-- `activities`
+## Connecting OpenAI
 
-with row-level security policies for owner-based access.
+The AI functions in `src/lib/ai.ts` are structured as drop-in replacements. To connect OpenAI:
 
-## AI Integration Notes
+1. Install the SDK: `npm install openai`
+2. Add your API key to `.env.local`
+3. Replace the mock implementations in `src/lib/ai.ts` with OpenAI API calls
+4. The API route at `src/app/api/ai/generate/route.ts` is ready for server-side AI calls
 
-Current generation uses mock logic (`src/lib/ai/mock-generator.ts`) via a stable service layer.
+## Safety & Compliance
 
-To connect a real model later:
+CreatorReach AI is designed for **AI-assisted outreach**, not automated platform abuse:
 
-1. Implement `generateCreatorInsightsWithOpenAI` and `generateOutreachWithOpenAI` in:
-   - `src/lib/ai/openai-provider.ts`
-2. Set `NEXT_PUBLIC_USE_MOCK_AI=false`
-3. Add secure server-side API key handling and request validation.
+- All messages are generated as **drafts for human review**
+- No social platform credential scraping
+- No bulk auto-send features
+- No direct platform API integrations for messaging
+- Users send messages manually through their own accounts
 
-No UI refactor should be required because the service interface is already abstracted.
+## License
 
-## Scripts
-
-- `npm run dev` - run local development server
-- `npm run lint` - run ESLint
-- `npm run build` - production build
-- `npm run start` - start production server
-
-## Safety / Compliance
-
-CreatorReach AI is intentionally scoped to:
-
-- campaign planning
-- AI-assisted drafting
-- relationship tracking
-- analytics for manually sent outreach
-
-It does **not** include:
-
-- bulk social auto-send
-- scraping social platform credentials
-- prohibited platform abuse workflows
+MIT

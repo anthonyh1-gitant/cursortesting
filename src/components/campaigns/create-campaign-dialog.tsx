@@ -1,138 +1,145 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { OfferType } from "@/lib/types";
-
-const offerTypes: OfferType[] = ["Affiliate", "Paid Post", "Gifted Product", "Ambassador", "Revenue Share"];
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, Loader2 } from "lucide-react";
+import { BrandTone, OfferType } from "@/types";
 
 export function CreateCampaignDialog() {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [productName, setProductName] = useState("");
-  const [productUrl, setProductUrl] = useState("");
-  const [niche, setNiche] = useState("");
-  const [targetAudience, setTargetAudience] = useState("");
-  const [campaignGoal, setCampaignGoal] = useState("");
-  const [offerType, setOfferType] = useState<OfferType>("Affiliate");
-  const [brandTone, setBrandTone] = useState("");
-  const [description, setDescription] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function resetForm() {
-    setName("");
-    setProductName("");
-    setProductUrl("");
-    setNiche("");
-    setTargetAudience("");
-    setCampaignGoal("");
-    setOfferType("Affiliate");
-    setBrandTone("");
-    setDescription("");
-  }
-
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    setMessage("Campaign draft captured in UI. Connect this form to Supabase insert to persist.");
-    resetForm();
-  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 1000));
+    setLoading(false);
+    setOpen(false);
+  };
 
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>Create Campaign</Button>
-      <Dialog open={open}>
-        <DialogContent onClose={() => setOpen(false)}>
-          <DialogHeader>
-            <DialogTitle>Create new campaign</DialogTitle>
-            <DialogDescription>
-              Define campaign goals, offer structure, and positioning for AI-assisted outreach.
-            </DialogDescription>
-          </DialogHeader>
-          <form className="mt-4 grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
-            <div className="space-y-1.5">
-              <Label htmlFor="campaign-name">Campaign name</Label>
-              <Input id="campaign-name" value={name} onChange={(e) => setName(e.target.value)} required />
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700">
+          <Plus className="mr-2 h-4 w-4" />
+          New Campaign
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-2xl sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Create Campaign</DialogTitle>
+          <DialogDescription>
+            Set up a new creator outreach campaign.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div className="space-y-2">
+            <Label htmlFor="name">Campaign Name</Label>
+            <Input id="name" placeholder="e.g. Summer Product Launch" className="rounded-xl" required />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="productName">Product Name</Label>
+              <Input id="productName" placeholder="e.g. GlowSerum Pro" className="rounded-xl" required />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="product-name">Product name</Label>
-              <Input id="product-name" value={productName} onChange={(e) => setProductName(e.target.value)} required />
+            <div className="space-y-2">
+              <Label htmlFor="productUrl">Product URL</Label>
+              <Input id="productUrl" type="url" placeholder="https://..." className="rounded-xl" />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="product-url">Product URL</Label>
-              <Input
-                id="product-url"
-                type="url"
-                placeholder="https://"
-                value={productUrl}
-                onChange={(e) => setProductUrl(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="niche">Niche</Label>
-              <Input id="niche" value={niche} onChange={(e) => setNiche(e.target.value)} required />
+              <Input id="niche" placeholder="e.g. Beauty & Skincare" className="rounded-xl" required />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="target-audience">Target audience</Label>
-              <Input
-                id="target-audience"
-                value={targetAudience}
-                onChange={(e) => setTargetAudience(e.target.value)}
-                required
-              />
+            <div className="space-y-2">
+              <Label htmlFor="targetAudience">Target Audience</Label>
+              <Input id="targetAudience" placeholder="e.g. Women 18-35" className="rounded-xl" />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="campaign-goal">Campaign goal</Label>
-              <Input
-                id="campaign-goal"
-                value={campaignGoal}
-                onChange={(e) => setCampaignGoal(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="offer-type">Offer type</Label>
-              <Select
-                id="offer-type"
-                value={offerType}
-                onChange={(e) => setOfferType(e.target.value as OfferType)}
-              >
-                {offerTypes.map((offer) => (
-                  <option key={offer} value={offer}>
-                    {offer}
-                  </option>
-                ))}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="campaignGoal">Campaign Goal</Label>
+            <Input id="campaignGoal" placeholder="e.g. Drive trial and UGC" className="rounded-xl" required />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Offer Type</Label>
+              <Select defaultValue="gifted">
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(["gifted", "paid", "affiliate", "revenue_share", "barter", "other"] as OfferType[]).map((t) => (
+                    <SelectItem key={t} value={t} className="capitalize">
+                      {t.replace("_", " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="brand-tone">Brand tone</Label>
-              <Input id="brand-tone" value={brandTone} onChange={(e) => setBrandTone(e.target.value)} required />
+            <div className="space-y-2">
+              <Label>Brand Tone</Label>
+              <Select defaultValue="friendly">
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(["friendly", "professional", "casual", "premium", "playful", "bold"] as BrandTone[]).map((t) => (
+                    <SelectItem key={t} value={t} className="capitalize">
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="space-y-1.5 md:col-span-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
-            </div>
-            {message ? <p className="text-sm text-emerald-600 md:col-span-2 dark:text-emerald-400">{message}</p> : null}
-            <div className="flex justify-end gap-2 md:col-span-2">
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Save Campaign</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              placeholder="Describe your campaign..."
+              className="min-h-[80px] rounded-xl"
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button type="button" variant="outline" className="rounded-xl" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700"
+              disabled={loading}
+            >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Create Campaign
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

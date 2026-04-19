@@ -1,21 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "CreatorReach AI",
-  description: "AI-assisted creator outreach CRM for modern founder-led teams.",
+  title: "CreatorReach AI — AI-Assisted Creator Outreach",
+  description:
+    "Manage influencer and creator outreach with AI-generated personalized messages, campaign management, and pipeline tracking.",
 };
 
 export default function RootLayout({
@@ -24,9 +18,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
-      <body className="min-h-full bg-background text-foreground">
-        <ThemeProvider>{children}</ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
